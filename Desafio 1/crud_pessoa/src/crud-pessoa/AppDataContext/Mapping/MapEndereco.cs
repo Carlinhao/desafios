@@ -10,7 +10,10 @@ namespace crud_pessoa.AppDataContext.Mapping
         {
             builder.ToTable("Endereco");
             
-            builder.Property<int>("Id");
+            builder.Property<int>("Id")
+                .IsRequired();
+
+            builder.HasKey("Id");
 
             builder.Property(x => x.Bairro)
                 .HasMaxLength(100)

@@ -9,7 +9,9 @@ namespace crud_pessoa.AppDataContext.Mapping
         public void Configure(EntityTypeBuilder<Contato> builder)
         {
             builder.ToTable("Contato");
-            builder.Property<int>("Id");
+            builder.Property<int>("Id")
+                .IsRequired();
+            builder.HasKey("Id");
 
             builder.Property(x => x.Email)
                .HasMaxLength(100)
