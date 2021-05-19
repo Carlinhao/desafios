@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace crud_pessoa.AppDataContext.Mapping
 {
-    public class MappingEntities : IEntityTypeConfiguration<Pessoa>
+    public class MapPessoa : IEntityTypeConfiguration<Pessoa>
     {
         public void Configure(EntityTypeBuilder<Pessoa> builder)
         {
@@ -14,14 +14,17 @@ namespace crud_pessoa.AppDataContext.Mapping
 
             builder.Property(p => p.Nome)
                 .HasMaxLength(100)
+                .HasColumnType("varchar(100)")
                 .IsRequired();
 
             builder.Property(p => p.Idade)
                 .HasMaxLength(3)
+                .HasColumnType("char(3)")
                 .IsRequired();
 
             builder.Property(p => p.Cpf)
                 .HasMaxLength(11)
+                .HasColumnType("char(11)")
                 .IsRequired();
 
             builder.HasOne(x => x.Endereco);
