@@ -37,9 +37,9 @@ namespace crud_pessoa.AppDataContext.Mapping
                .HasColumnType("varchar(100)")
                .IsRequired();
 
-            builder.Property(x => x.)
-               .HasMaxLength(5)
-               .HasColumnType("varchar(5)")
+            builder.Property(x => x.Cep)
+               .HasMaxLength(8)
+               .HasColumnType("varchar(8)")
                .IsRequired();
 
         }
