@@ -1,4 +1,6 @@
-﻿using crud_pessoa.Models.Entity;
+﻿using crud_pessoa.AppDataContext.Mapping;
+using crud_pessoa.Models.Entity;
+using crud_pessoa.VOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace crud_pessoa.AppDataContext
@@ -10,6 +12,13 @@ namespace crud_pessoa.AppDataContext
             : base(options)
         {
 
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Pessoa>(new MapPessoa().Configure);
+            modelBuilder.Entity<Contato>(new MapContato().Configure);
+            modelBuilder.Entity<Endereco>(new MapEndereco().Configure);
         }
     }
 }
