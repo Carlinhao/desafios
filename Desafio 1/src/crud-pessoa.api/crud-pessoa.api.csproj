@@ -5,5 +5,9 @@
     <RootNamespace>crud_pessoa.api</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 
 </Project>
