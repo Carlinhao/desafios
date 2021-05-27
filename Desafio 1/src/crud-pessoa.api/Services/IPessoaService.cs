@@ -1,4 +1,5 @@
 ﻿using crud_pessoa.api.Dtos;
+using crud_pessoa.api.Dtos.Responses;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -7,8 +8,8 @@ namespace crud_pessoa.api.Services
     public interface IPessoaService
     {
         Task<IEnumerable<PessoaDto>> GetAllAsync(string cpf = "");
-        Task<int> InsertAsync(PessoaDto pessoa);
-        Task<int> UpdateAsync(PessoaUpdateDto pessoa);
-        Task<int> DeleteAsync(int id);
+        Task<ResultResponse> InsertAsync(PessoaDto pessoa);
+        Task<ResultResponse> UpdateAsync(PessoaUpdateDto pessoa);
+        Task<bool> DeleteAsync(int id);
     }
 }
