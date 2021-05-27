@@ -1,4 +1,5 @@
 ﻿using crud_pessoa.api.DbContextConfig;
+using crud_pessoa.api.Dtos.Responses;
 using crud_pessoa.api.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -45,30 +46,29 @@ namespace crud_pessoa.api.Repositories
             return result;
         }
 
-        public async Task<int> InsertAsync(Pessoa pessoa)
+        public async Task<ResultResponse> InsertAsync(Pessoa pessoa)
         {
             try
             {
                 await _dataSet.AddAsync(pessoa);
                 await _dbContext.SaveChangesAsync();
 
-                return 1;
+                return new ResultResponse { Data = pessoa, Message = "Success", Success = true };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Erro: ", ex.Message);
                 throw;
             }
-            return 0;
         }
 
-        public async Task<int> UpdateAsync(Pessoa pessoa)
+        public async Task<ResultResponse> UpdateAsync(Pessoa pessoa)
         {
             try
             {
                 var result = await _dataSet.SingleOrDefaultAsync(x => x.Id.Equals(pessoa.Id));
                 if (result == null)
-                    return 0;
+                    return new ResultResponse { Data = result, Message = "Success", Success = true};
 
                 _dbContext.Entry(result).CurrentValues.SetValues(pessoa);
                 await _dbContext.SaveChangesAsync();
@@ -78,17 +78,16 @@ namespace crud_pessoa.api.Repositories
                 _logger.LogError($"Erro: ", ex.Message);
                 throw;
             }
-
-            return 1;
+            return null;
         }
 
-        public async Task<int> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             try
             {
                 var result = await _dataSet.SingleOrDefaultAsync(x => x.Id.Equals(id));
                 if (result == null)
-                    return 0;
+                    return false;
 
                 _dataSet.Remove(result);
                 await _dbContext.SaveChangesAsync();
@@ -98,7 +97,7 @@ namespace crud_pessoa.api.Repositories
                 _logger.LogError($"Erro: ", ex.Message);
                 throw;
             }
-            return 1;
+            return true;
         }
     }
 }
