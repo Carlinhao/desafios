@@ -24,7 +24,7 @@ namespace crud_pessoa.api
         public void ConfigureServices(IServiceCollection services)
         {
             services.SwaggerServices();
-            services.AddDbContext<ApplicationDbContext>( opt => opt.UseSqlServer(Configuration.GetConnectionString("SQL_SERVER")));
+            services.AddDbContext<ApplicationDbContext>();
             services.AddControllers();
 
             services.AddApiVersioning(options =>
