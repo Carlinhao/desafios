@@ -6,6 +6,7 @@ namespace crud_pessoa.api.Configs.Validators
     public class PessoaValidator : AbstractValidator<PessoaDto>
     {
         private const string NomeErrorMessage = "Nome não pode ser vazio ou nulo";
+        private const string IdErrorMessage = "Id não pode ser vazio ou nulo";
         private const string CpfErrorMessage = "Cpf não pode ser vazio ou nulo";
         private const string CpfNumeroErrorMessage = "Numero Cpf deve possuir 11 dígitos";
         private const string ContatoDtoErroMessage = "Contato não pode ser vazio ou nulo";
@@ -18,6 +19,12 @@ namespace crud_pessoa.api.Configs.Validators
                 .WithMessage(NomeErrorMessage)
                 .NotEmpty()
                 .WithMessage(NomeErrorMessage);
+
+            RuleFor(x => x.Id)
+                .NotNull()
+                .WithMessage(IdErrorMessage)
+                .NotEmpty()
+                .WithMessage(IdErrorMessage);
 
             RuleFor(x => x.Cpf)
                 .NotNull()
