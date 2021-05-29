@@ -11,5 +11,6 @@ namespace crud_pessoa.api.Repositories
         Task<ResultResponse> InsertAsync(Pessoa pessoa);
         Task<ResultResponse> UpdateAsync(Pessoa pessoa);
         Task<bool> DeleteAsync(int id);
+        Task<bool> CpfExistAsync(int id);
     }
 }
