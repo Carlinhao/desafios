@@ -8,8 +8,8 @@ namespace crud_pessoa.api.Services
     public interface IPessoaService
     {
         Task<IEnumerable<PessoaDto>> GetAllAsync(string cpf = "");
-        Task<ResultResponse> InsertAsync(PessoaDto pessoa);
-        Task<ResultResponse> UpdateAsync(PessoaUpdateDto pessoa);
+        Task<ResultResponse> InsertAsync(InsertPessoaDto pessoa);
+        Task<ResultResponse> UpdateAsync(PessoaDto pessoa);
         Task<bool> DeleteAsync(int id);
     }
 }
