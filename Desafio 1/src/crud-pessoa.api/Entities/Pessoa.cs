@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace crud_pessoa.api.Entities
-{
+{    
     public class Pessoa : Entity
     {
         [JsonPropertyName("nome")]
