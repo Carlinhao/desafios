@@ -1,11 +1,15 @@
-﻿using crud_pessoa.api.DbContextConfig;
+﻿using crud_pessoa.api.Configs.Notifications;
+using crud_pessoa.api.DbContextConfig;
 using crud_pessoa.api.Dtos.Responses;
 using crud_pessoa.api.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
+using crud_pessoa.api.Dtos;
 
 namespace crud_pessoa.api.Repositories
 {
@@ -13,14 +17,20 @@ namespace crud_pessoa.api.Repositories
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly ILogger<PessoaRepository> _logger;
+        private readonly INotificacaoContext _notificacaoContext;
+        private readonly IMapper _mapper;
         private readonly DbSet<Pessoa> _dataSet;
 
         public PessoaRepository(ApplicationDbContext dbContext,
-                                ILogger<PessoaRepository> logger)
+                                ILogger<PessoaRepository> logger,
+                                INotificacaoContext notificacaoContext,
+                                IMapper mapper)
         {
             _dbContext = dbContext;
             _logger = logger;
             _dataSet = _dbContext.Set<Pessoa>();
+            _notificacaoContext = notificacaoContext;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<Pessoa>> GetAllAsync(string cpf = "")
@@ -30,19 +40,29 @@ namespace crud_pessoa.api.Repositories
             IEnumerable<Pessoa> result;
             try
             {
-                if (string.IsNullOrEmpty(cpf))
-                    result = (IEnumerable<Pessoa>)await _dataSet.SingleOrDefaultAsync(x => x.Cpf.Equals(cpf));
-
-                result = await _dataSet.ToListAsync();
+                if (!string.IsNullOrEmpty(cpf))
+                {
+                    result = await _dataSet.Include(x => x.Contato)
+                                           .Include(x => x.Endereco)
+                                           .Where(x => x.Cpf == cpf)
+                                           .ToListAsync();
+                }
+                else
+                {
+                    result = await _dataSet.Include(x => x.Contato)
+                                           .Include(x => x.Endereco)
+                                           .ToListAsync();
+                }
 
                 _logger.LogInformation("Retorno da consulta", result);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Erro: ", ex.Message);
-                throw;
-            }
+                _notificacaoContext.AddNotification("Erro ao buscar dados no banco", ex.Message, "GetAllAsync");
 
+                throw new Exception();
+            }
             return result;
         }
 
@@ -53,12 +73,16 @@ namespace crud_pessoa.api.Repositories
                 await _dataSet.AddAsync(pessoa);
                 await _dbContext.SaveChangesAsync();
 
-                return new ResultResponse { Data = pessoa, Message = "Success", Success = true };
+                var result = _mapper.Map<PessoaDto>(pessoa);
+
+                return new ResultResponse { Data = result, Message = "Success", Success = true };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Erro: ", ex.Message);
-                throw;
+                _notificacaoContext.AddNotification("Erro ao inserir dados no banco", ex.Message, "InsertAsync");
+
+                throw new Exception();
             }
         }
 
@@ -66,19 +90,25 @@ namespace crud_pessoa.api.Repositories
         {
             try
             {
-                var result = await _dataSet.SingleOrDefaultAsync(x => x.Id.Equals(pessoa.Id));
-                if (result == null)
-                    return new ResultResponse { Data = result, Message = "Success", Success = true};
+                var retornoPessoa = await _dataSet.Include(x => x.Contato)
+                    .Include(x => x.Endereco)
+                    .Where(x => x.Id == pessoa.Id).FirstOrDefaultAsync();
 
-                _dbContext.Entry(result).CurrentValues.SetValues(pessoa);
+                if (retornoPessoa == null)
+                    return new ResultResponse { Data = retornoPessoa, Message = "Registro não encontrado", Success = false };
+
+                _dbContext.Entry(retornoPessoa).CurrentValues.SetValues(pessoa);
                 await _dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Erro: ", ex.Message);
-                throw;
+                _notificacaoContext.AddNotification("Erro ao atualizar dados no banco", ex.Message, "UpdateAsync");
+                throw new Exception();
             }
-            return null;
+
+            var result = _mapper.Map<PessoaDto>(pessoa);
+            return new ResultResponse { Data = result, Message = "Success", Success = true };
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -91,13 +121,38 @@ namespace crud_pessoa.api.Repositories
 
                 _dataSet.Remove(result);
                 await _dbContext.SaveChangesAsync();
+
+                return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Erro: ", ex.Message);
-                throw;
+                _notificacaoContext.AddNotification("Erro ao deletar dados no banco", ex.Message, "DeleteAsync");
+                
+                throw new Exception();
             }
-            return true;
+        }
+
+        public async Task<bool> CpfExistAsync(int id)
+        {
+            try
+            {
+                var result = await _dataSet.Include(x => x.Contato)
+                                           .Include(x => x.Endereco)
+                                           .Where(x => x.Id == id).ToListAsync();
+
+                if (result.Count() == 0)
+                    return false;
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro: ", ex.Message);
+                _notificacaoContext.AddNotification("Erro ao deletar dados no banco", ex.Message, "DeleteAsync");
+
+                throw new Exception();
+            }
         }
     }
 }
