@@ -78,7 +78,9 @@ namespace crud_pessoa.api.Services
                 return new ResultResponse();
             }
 
-            return await _pessoaRepository.InsertAsync(pessoaEntity);
+            var result = await _pessoaRepository.InsertAsync(pessoaEntity);
+
+            return result;
         }
 
         public async Task<ResultResponse> UpdateAsync(PessoaDto pessoaDto)
@@ -98,6 +100,7 @@ namespace crud_pessoa.api.Services
             }
 
             var pessoaEntity = _mapper.Map<Pessoa>(pessoaDto);
+
             var pessoa = await _pessoaRepository.GetAllAsync(pessoaEntity.Cpf);
 
             if (pessoa.FirstOrDefault().Cpf.Equals(pessoaDto.Cpf))

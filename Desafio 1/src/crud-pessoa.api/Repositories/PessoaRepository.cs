@@ -75,7 +75,7 @@ namespace crud_pessoa.api.Repositories
 
                 var result = _mapper.Map<PessoaDto>(pessoa);
 
-                return new ResultResponse { Data = result, Message = "Success", Success = true };
+                return new ResultResponse { Data = result, Message = "Cadastrado com sucesso", Success = true };
             }
             catch (Exception ex)
             {
@@ -108,7 +108,7 @@ namespace crud_pessoa.api.Repositories
             }
 
             var result = _mapper.Map<PessoaDto>(pessoa);
-            return new ResultResponse { Data = result, Message = "Success", Success = true };
+            return new ResultResponse { Data = result, Message = "Alterado com sucesso", Success = true };
         }
 
         public async Task<bool> DeleteAsync(int id)

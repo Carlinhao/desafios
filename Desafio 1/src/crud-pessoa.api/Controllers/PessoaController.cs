@@ -85,7 +85,7 @@ namespace crud_pessoa.api.Controllers
             return Ok(result);
         }
 
-        [HttpPut]
+        [HttpGet]
         [Route("deletar-pessoa/{id:int}")]
         public async Task<ActionResult<bool>> DeletarPessoaAsync(int id)
         {
